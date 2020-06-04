@@ -34,3 +34,4 @@
 # IDE files
 .idea/
 .code/
+cmake-build-debug/

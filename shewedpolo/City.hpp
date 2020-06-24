@@ -8,4 +8,5 @@ private:
     bool is_capital;
 public:
     City(float x, float y, int state);
+    float distance(City &that);
 };

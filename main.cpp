@@ -1,9 +1,11 @@
-#include <fstream>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include "shewedpolo/City.hpp"
+
+#define INF INT32_MAX
 
 struct Edge {
     float w = INT64_MAX;
@@ -40,6 +42,40 @@ void prim(std::vector<City> &cities) {
     std::cout << total_weight << std::endl;
 }
 
+void find_capitals(std::vector<City> &cities) {
+    int n = cities.size();
+    std::vector<std::vector<int>> indexes(n);
+    for (int i = 0; i < n; i++) {
+        indexes[cities[i].getState() - 1].push_back(i);
+    }
+    for (const auto &state: indexes) {
+        if (state.empty())
+            continue;
+        float x0 = INF, x1 = -INF, y0 = INF, y1 = -INF;
+        for (int i: state) {
+            if (cities[i].getX() > x1)
+                x1 = cities[i].getX();
+            if (cities[i].getX() < x0)
+                x0 = cities[i].getX();
+            if (cities[i].getY() > y1)
+                y1 = cities[i].getY();
+            if (cities[i].getY() < y0)
+                y0 = cities[i].getY();
+        }
+        float x = (x1 - x0) / 2;
+        float y = (y1 - y0) / 2;
+        float min_dis = INF;
+        int j = -1;
+        for (int i: state) {
+            if (cities[i].distance(x, y) < min_dis) {
+                min_dis = cities[i].distance(x, y);
+                j = i;
+            }
+        }
+        cities[j].setIsCapital(true);
+        std::cout << "Capital of State " << cities[j].getState() << ": " << j + 1 << std::endl;
+    }
+}
 
 int main() {
     int n, s;
@@ -51,7 +87,8 @@ int main() {
         std::cin >> x >> y >> s;
         cities.emplace_back(x, y, s);
     }
-    prim(cities);
+    find_capitals(cities);
+//    prim(cities);
     std::cout << "Hello Faraz!!" << std::endl;
     return 0;
 }

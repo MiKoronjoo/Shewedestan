@@ -35,3 +35,6 @@
 .idea/
 .code/
 cmake-build-debug/
+
+# Input file
+*.in

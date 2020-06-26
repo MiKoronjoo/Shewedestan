@@ -3,7 +3,13 @@
 
 class City {
 private:
-    float x, y;
+    float x, y, max_dis;
+public:
+    float getMaxDis() const;
+
+    void setMaxDis(float maxDis);
+
+private:
     int state;
     bool is_capital;
 

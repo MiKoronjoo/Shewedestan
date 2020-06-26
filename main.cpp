@@ -51,29 +51,24 @@ void find_capitals(std::vector<City> &cities) {
     for (const auto &state: indexes) {
         if (state.empty())
             continue;
-        float x0 = INF, x1 = -INF, y0 = INF, y1 = -INF;
         for (int i: state) {
-            if (cities[i].getX() > x1)
-                x1 = cities[i].getX();
-            if (cities[i].getX() < x0)
-                x0 = cities[i].getX();
-            if (cities[i].getY() > y1)
-                y1 = cities[i].getY();
-            if (cities[i].getY() < y0)
-                y0 = cities[i].getY();
-        }
-        float x = (x1 - x0) / 2;
-        float y = (y1 - y0) / 2;
-        float min_dis = INF;
-        int j = -1;
-        for (int i: state) {
-            if (cities[i].distance(x, y) < min_dis) {
-                min_dis = cities[i].distance(x, y);
-                j = i;
+            for (int j: state) {
+                float dis = cities[i].distance(cities[j]);
+                if (dis > cities[i].getMaxDis()) {
+                    cities[i].setMaxDis(dis);
+                }
             }
         }
-        cities[j].setIsCapital(true);
-        std::cout << "Capital of State " << cities[j].getState() << ": " << j + 1 << std::endl;
+        float min_dis = INF;
+        int cap_indx = -1;
+        for (int i: state) {
+            if (cities[i].getMaxDis() < min_dis) {
+                min_dis = cities[i].getMaxDis();
+                cap_indx = i;
+            }
+        }
+        cities[cap_indx].setIsCapital(true);
+        std::cout << cities[cap_indx].getState() << ": " << cap_indx + 1 << std::endl;
     }
 }
 
@@ -89,6 +84,6 @@ int main() {
     }
     find_capitals(cities);
 //    prim(cities);
-    std::cout << "Hello Faraz!!" << std::endl;
+//    std::cout << "Hello Faraz!!" << std::endl;
     return 0;
 }

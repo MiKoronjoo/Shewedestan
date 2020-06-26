@@ -27,7 +27,7 @@ public:
 public:
     City(float x, float y, int state);
 
-    float distance(City &that);
+    float distance(City *that);
 
     float distance(float x0, float y0) const;
 };

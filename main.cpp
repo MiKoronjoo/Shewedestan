@@ -5,14 +5,14 @@
 #include <iomanip>
 #include "shewedpolo/City.hpp"
 
-#define INF INT32_MAX
+#define INF MAXFLOAT
 
 struct Edge {
-    float w = INT64_MAX;
+    float w = INF;
     int to = -1;
 };
 
-void prim(std::vector<City *> &cities) {
+float prim(std::vector<City *> &cities) {
     float total_weight = 0;
     int n = cities.size();
     std::vector<bool> selected(n, false);
@@ -24,22 +24,36 @@ void prim(std::vector<City *> &cities) {
             if (not selected[j] and (v == -1 or min_e[j].w < min_e[v].w))
                 v = j;
         }
-        if (min_e[v].w == INT64_MAX) {
+        if (min_e[v].w == INF) {
             std::cout << "No MST!" << std::endl;
-            return;
+            return 0;
         }
         selected[v] = true;
         total_weight += min_e[v].w;
-        if (min_e[v].to != -1)
-            std::cout << v + 1 << " " << min_e[v].to + 1 << std::endl;
+//        if (min_e[v].to != -1)
+//            std::cout << v + 1 << " " << min_e[v].to + 1 << std::endl;
         for (int to = 0; to < n; ++to) {
             if (cities[v]->distance(cities[to]) < min_e[to].w)
                 min_e[to] = {cities[v]->distance(cities[to]), v};
         }
     }
-    std::cout << std::fixed;
-    std::cout << std::setprecision(2);
-    std::cout << total_weight << std::endl;
+    return total_weight;
+}
+
+float sep_prim(std::vector<City *> &cities) {
+    int n = cities.size();
+    std::vector<std::vector<City *>> states(n);
+    for (int i = 0; i < n; i++) {
+        states[cities[i]->getState() - 1].push_back(cities[i]);
+    }
+    float total_weight = 0;
+    for (auto state: states) {
+        if (state.empty())
+            continue;
+        total_weight += prim(state);
+        std::cout << total_weight << std::endl;
+    }
+    return total_weight;
 }
 
 void find_capitals(std::vector<City *> &cities) {
@@ -82,8 +96,11 @@ int main() {
         std::cin >> x >> y >> s;
         cities.push_back(new City(x, y, s));
     }
-    find_capitals(cities);
-//    prim(cities);
-//    std::cout << "Hello Faraz!!" << std::endl;
+//    find_capitals(cities);
+//    float total_weight = prim(cities);
+    float total_weight = sep_prim(cities);
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
+    std::cout << total_weight << std::endl;
     return 0;
 }

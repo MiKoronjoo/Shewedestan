@@ -40,19 +40,49 @@ float prim(std::vector<City *> &cities) {
     return total_weight;
 }
 
+float state_prim(std::vector<std::vector<City *>> &states) {
+    float total_weight = 0;
+    int n = states.size();
+    std::vector<bool> selected(n, false);
+    std::vector<Edge> min_e(n);
+    min_e[0].w = 0;
+    for (int i = 0; i < n; ++i) {
+        int v = -1;
+        for (int j = 0; j < n; ++j) {
+            if (not selected[j] and (v == -1 or min_e[j].w < min_e[v].w))
+                v = j;
+        }
+        if (min_e[v].w == INF) {
+            std::cout << "No MST!" << std::endl;
+            return 0;
+        }
+        selected[v] = true;
+        total_weight += min_e[v].w;
+        int this_state = states[v].size();
+        for (int ts = 0; ts < this_state; ++ts)
+            for (int to = 0; to < n; ++to) {
+                int ct = states[to].size();
+                for (int t = 0; t < ct; ++t)
+                    if (states[v][ts]->distance(states[to][t]) < min_e[to].w)
+                        min_e[to] = {states[v][ts]->distance(states[to][t]), v};
+            }
+    }
+    return total_weight;
+}
+
 float sep_prim(std::vector<City *> &cities) {
-    int n = cities.size();
+    int n = cities[cities.size() - 1]->getState();
     std::vector<std::vector<City *>> states(n);
-    for (int i = 0; i < n; i++) {
-        states[cities[i]->getState() - 1].push_back(cities[i]);
+    for (auto &city: cities) {
+        states[city->getState() - 1].push_back(city);
     }
     float total_weight = 0;
     for (auto state: states) {
         if (state.empty())
             continue;
         total_weight += prim(state);
-        std::cout << total_weight << std::endl;
     }
+    total_weight += state_prim(states);
     return total_weight;
 }
 
@@ -99,8 +129,9 @@ int main() {
 //    find_capitals(cities);
 //    float total_weight = prim(cities);
     float total_weight = sep_prim(cities);
-    std::cout << std::fixed;
-    std::cout << std::setprecision(2);
-    std::cout << total_weight << std::endl;
+//    std::cout << std::fixed;
+//    std::cout << std::setprecision(2);
+//    std::cout << total_weight << std::endl;
+    printf("%.2f\n", total_weight);
     return 0;
 }

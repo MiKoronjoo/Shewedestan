@@ -1,39 +1,38 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <cmath>
+//#include <cmath>
 #include <iomanip>
+#include "shewedpolo/KDTree.hpp"
 #include "shewedpolo/City.hpp"
+#include "shewedpolo/Path.hpp"
 
 #define INF MAXFLOAT
 
-struct Edge {
-    float w = INF;
-    int to = -1;
-};
+int count_edges;
 
 float prim(std::vector<City *> &cities) {
     float total_weight = 0;
     int n = cities.size();
     std::vector<bool> selected(n, false);
-    std::vector<Edge> min_e(n);
-    min_e[0].w = 0;
+    std::vector<Path> min_e(n);
+    min_e[0].distance = 0;
     for (int i = 0; i < n; ++i) {
         int v = -1;
         for (int j = 0; j < n; ++j) {
-            if (not selected[j] and (v == -1 or min_e[j].w < min_e[v].w))
+            if (not selected[j] and (v == -1 or min_e[j].distance < min_e[v].distance))
                 v = j;
         }
-        if (min_e[v].w == INF) {
+        if (min_e[v].distance == INF) {
             std::cout << "No MST!" << std::endl;
             return 0;
         }
         selected[v] = true;
-        total_weight += min_e[v].w;
+        total_weight += min_e[v].distance;
 //        if (min_e[v].to != -1)
 //            std::cout << v + 1 << " " << min_e[v].to + 1 << std::endl;
         for (int to = 0; to < n; ++to) {
-            if (cities[v]->distance(cities[to]) < min_e[to].w)
+            if (cities[v]->distance(cities[to]) < min_e[to].distance)
                 min_e[to] = {cities[v]->distance(cities[to]), v};
         }
     }
@@ -44,26 +43,26 @@ float state_prim(std::vector<std::vector<City *>> &states) {
     float total_weight = 0;
     int n = states.size();
     std::vector<bool> selected(n, false);
-    std::vector<Edge> min_e(n);
-    min_e[0].w = 0;
+    std::vector<Path> min_e(n);
+    min_e[0].distance = 0;
     for (int i = 0; i < n; ++i) {
         int v = -1;
         for (int j = 0; j < n; ++j) {
-            if (not selected[j] and (v == -1 or min_e[j].w < min_e[v].w))
+            if (not selected[j] and (v == -1 or min_e[j].distance < min_e[v].distance))
                 v = j;
         }
-        if (min_e[v].w == INF) {
+        if (min_e[v].distance == INF) {
             std::cout << "No MST!" << std::endl;
             return 0;
         }
         selected[v] = true;
-        total_weight += min_e[v].w;
+        total_weight += min_e[v].distance;
         int this_state = states[v].size();
         for (int ts = 0; ts < this_state; ++ts)
             for (int to = 0; to < n; ++to) {
                 int ct = states[to].size();
                 for (int t = 0; t < ct; ++t)
-                    if (states[v][ts]->distance(states[to][t]) < min_e[to].w)
+                    if (states[v][ts]->distance(states[to][t]) < min_e[to].distance)
                         min_e[to] = {states[v][ts]->distance(states[to][t]), v};
             }
     }
@@ -116,7 +115,58 @@ void find_capitals(std::vector<City *> &cities) {
     }
 }
 
+
+bool compare(const Edge &e1, const Edge &e2) {
+    return e1.distance >= e2.distance;
+}
+
 int main() {
+    double total_distance = 0;
+    auto kdtree = new KDTree(2);
+    std::vector<Edge> edges;
+    std::vector<Edge> MST;
+
+    Node *first_node = kdtree->make();
+    first_node->in_fragment = true;
+
+    kdtree->search_nearest(kdtree->root, first_node);
+
+    edges.emplace_back(first_node, kdtree->nearest_node, kdtree->best_distance);
+    make_heap(edges.begin(), edges.end(), &compare);
+
+    while (kdtree->edges != MST.size()) {
+        Edge &candidate_edge = edges.front();
+
+        if (not candidate_edge.to->in_fragment) {
+            Node *new_node_in_fragment = candidate_edge.to;
+            new_node_in_fragment->in_fragment = true;
+            MST.push_back(candidate_edge);
+            total_distance = candidate_edge.distance + total_distance;
+
+            kdtree->delete_node(kdtree->root, nullptr, new_node_in_fragment);
+
+            kdtree->nearest_node = nullptr;
+            kdtree->search_nearest(kdtree->root, new_node_in_fragment);
+
+            edges.emplace_back(new_node_in_fragment, kdtree->nearest_node, kdtree->best_distance);
+            push_heap(edges.begin(), edges.end(), &compare);
+
+        } else {
+            Node *source_node = candidate_edge.from;
+
+            pop_heap(edges.begin(), edges.end(), &compare);
+            edges.pop_back();
+
+            kdtree->nearest_node = nullptr;
+            kdtree->search_nearest(kdtree->root, source_node);
+            edges.emplace_back(source_node, kdtree->nearest_node, kdtree->best_distance);
+            push_heap(edges.begin(), edges.end(), &compare);
+        }
+    }
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
+    std::cout << total_distance << std::endl;
+    return 0;
     int n, s;
     float x, y;
     std::cin >> n;

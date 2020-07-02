@@ -8,5 +8,8 @@ add_executable(
         Shewedestan
         shewedpolo/City.cpp
         shewedpolo/Path.cpp
+        shewedpolo/Node.cpp
+        shewedpolo/Edge.cpp
+        shewedpolo/KDTree.cpp
         main.cpp
 )

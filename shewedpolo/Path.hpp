@@ -2,10 +2,11 @@
 
 
 class Path {
-private:
+public:
     float distance;
     int to;
 
 public:
     Path();
+    Path(float distance, int to);
 };

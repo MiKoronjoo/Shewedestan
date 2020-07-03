@@ -7,16 +7,21 @@ Node *KDTree::make() {
     int state, count;
     std::cin >> count;
     edges = count - 1;
-    std::cin >> x;
-    std::cin >> y;
-    std::cin >> state;
-    Node *first_node = new Node(x, y);
+    std::cin >> x >> y >> state;
+    Node *first_node = new Node(x, y, state);
     for (int i = 0; i < edges; ++i) {
-        std::cin >> x;
-        std::cin >> y;
-        std::cin >> state;
-        Node *new_node = new Node(x, y);
+        std::cin >> x >> y >> state;
+        Node *new_node = new Node(x, y, state);
         this->insert(this->root, new_node, 0);
+    }
+    return first_node;
+}
+
+Node *KDTree::make(std::vector<Node *> &nodes) {
+    edges = nodes.size() - 1;
+    Node *first_node = nodes[0];
+    for (int i = 1; i < nodes.size(); ++i) {
+        this->insert(this->root, nodes[i], 0);
     }
     return first_node;
 }

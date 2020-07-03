@@ -7,9 +7,10 @@ public:
     Node *right = nullptr;
     bool in_fragment = false;
     int dimension = 0;
+    int state;
 
 public:
-    Node(double x, double y);
+    Node(double x, double y, int state);
 
     double distance(Node *that);
 };

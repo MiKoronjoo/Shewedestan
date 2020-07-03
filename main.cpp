@@ -117,21 +117,21 @@ bool compare(const Edge &e1, const Edge &e2) {
 }
 
 void phase1a() {
-    int n, s;
+    int count, state;
     float x, y;
-    std::cin >> n;
+    std::cin >> count;
     std::vector<City *> cities;
-    cities.reserve(n);
-    for (int i = 0; i < n; i++) {
-        std::cin >> x >> y >> s;
-        cities.push_back(new City(x, y, s));
+    cities.reserve(count);
+    for (int i = 0; i < count; i++) {
+        std::cin >> x >> y >> state;
+        cities.push_back(new City(x, y, state));
     }
     float total_weight = prim(cities);
     printf("%.2f\n", total_weight);
 }
 
 void phase1b() {
-    double total_distance = 0;
+    double total_weight = 0;
     auto kdtree = new KDTree(2);
     std::vector<Edge> edges;
     std::vector<Edge> MST;
@@ -151,7 +151,7 @@ void phase1b() {
             Node *new_node_in_fragment = candidate_edge.to;
             new_node_in_fragment->in_fragment = true;
             MST.push_back(candidate_edge);
-            total_distance = candidate_edge.distance + total_distance;
+            total_weight += candidate_edge.distance;
 
             kdtree->delete_node(kdtree->root, nullptr, new_node_in_fragment);
 
@@ -175,34 +175,99 @@ void phase1b() {
     }
     std::cout << std::fixed;
     std::cout << std::setprecision(2);
-    std::cout << total_distance << std::endl;
+    std::cout << total_weight << std::endl;
 }
 
 void phase1c() {
-    int n, s;
+    int count, state;
     float x, y;
-    std::cin >> n;
+    std::cin >> count;
     std::vector<City *> cities;
-    cities.reserve(n);
-    for (int i = 0; i < n; i++) {
-        std::cin >> x >> y >> s;
-        cities.push_back(new City(x, y, s));
+    cities.reserve(count);
+    for (int i = 0; i < count; i++) {
+        std::cin >> x >> y >> state;
+        cities.push_back(new City(x, y, state));
     }
     find_capitals(cities);
 }
 
 void phase2a() {
-    int n, s;
+    int count, state;
     float x, y;
-    std::cin >> n;
+    std::cin >> count;
     std::vector<City *> cities;
-    cities.reserve(n);
-    for (int i = 0; i < n; i++) {
-        std::cin >> x >> y >> s;
-        cities.push_back(new City(x, y, s));
+    cities.reserve(count);
+    for (int i = 0; i < count; i++) {
+        std::cin >> x >> y >> state;
+        cities.push_back(new City(x, y, state));
     }
     float total_weight = sep_prim(cities);
     printf("%.2f\n", total_weight);
+}
+
+void phase2b() {
+    double x, y, total_weight = 0;
+    int state, count, last_state = -1;
+    std::cin >> count;
+    std::vector<std::vector<Node *>> nodes;
+    for (int i = 0; i < count; i++) {
+        std::cin >> x >> y >> state;
+        if (state != last_state) {
+            last_state = state;
+            nodes.emplace_back();
+        }
+        nodes[state - 1].push_back(new Node(x, y, state));
+    }
+    int n = nodes.size();
+    std::vector<KDTree *> kdtrees;
+    kdtrees.reserve(n);
+    for (int i = 0; i < n; ++i) {
+        if (nodes[i].size() < 2)
+            continue;
+        kdtrees[i] = new KDTree(2);
+        auto kdtree = kdtrees[i];
+        std::vector<Edge> edges;
+        std::vector<Edge> MST;
+        Node *first_node = kdtree->make(nodes[i]);
+        first_node->in_fragment = true;
+        kdtree->search_nearest(kdtree->root, first_node);
+
+        edges.emplace_back(first_node, kdtree->nearest_node, kdtree->best_distance);
+        make_heap(edges.begin(), edges.end(), &compare);
+
+        while (kdtree->edges != MST.size()) {
+            Edge &candidate_edge = edges.front();
+
+            if (not candidate_edge.to->in_fragment) {
+                Node *new_node_in_fragment = candidate_edge.to;
+                new_node_in_fragment->in_fragment = true;
+                MST.push_back(candidate_edge);
+                total_weight += candidate_edge.distance;
+
+                kdtree->delete_node(kdtree->root, nullptr, new_node_in_fragment);
+
+                kdtree->nearest_node = nullptr;
+                kdtree->search_nearest(kdtree->root, new_node_in_fragment);
+
+                edges.emplace_back(new_node_in_fragment, kdtree->nearest_node, kdtree->best_distance);
+                push_heap(edges.begin(), edges.end(), &compare);
+
+            } else {
+                Node *source_node = candidate_edge.from;
+
+                pop_heap(edges.begin(), edges.end(), &compare);
+                edges.pop_back();
+
+                kdtree->nearest_node = nullptr;
+                kdtree->search_nearest(kdtree->root, source_node);
+                edges.emplace_back(source_node, kdtree->nearest_node, kdtree->best_distance);
+                push_heap(edges.begin(), edges.end(), &compare);
+            }
+        }
+    }
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
+    std::cout << total_weight << std::endl;
 }
 
 int main() {
@@ -210,5 +275,6 @@ int main() {
 //    phase1b();
 //    phase1c();
 //    phase2a();
+    phase2b();
     return 0;
 }

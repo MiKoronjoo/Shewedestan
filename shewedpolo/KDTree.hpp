@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include<cmath>
 #include <iostream>
 #include "Node.hpp"
@@ -19,6 +20,8 @@ public:
     explicit KDTree(int k);
 
     Node *make();
+
+    Node *make(std::vector<Node *> &nodes);
 
     void search_nearest(Node *this_node, Node *that_node);
 

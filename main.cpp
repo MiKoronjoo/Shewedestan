@@ -1,15 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-//#include <cmath>
 #include <iomanip>
 #include "shewedpolo/KDTree.hpp"
 #include "shewedpolo/City.hpp"
 #include "shewedpolo/Path.hpp"
 
 #define INF MAXFLOAT
-
-int count_edges;
 
 float prim(std::vector<City *> &cities) {
     float total_weight = 0;
@@ -115,12 +112,25 @@ void find_capitals(std::vector<City *> &cities) {
     }
 }
 
-
 bool compare(const Edge &e1, const Edge &e2) {
     return e1.distance >= e2.distance;
 }
 
-int main() {
+void phase1a() {
+    int n, s;
+    float x, y;
+    std::cin >> n;
+    std::vector<City *> cities;
+    cities.reserve(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> x >> y >> s;
+        cities.push_back(new City(x, y, s));
+    }
+    float total_weight = prim(cities);
+    printf("%.2f\n", total_weight);
+}
+
+void phase1b() {
     double total_distance = 0;
     auto kdtree = new KDTree(2);
     std::vector<Edge> edges;
@@ -166,7 +176,9 @@ int main() {
     std::cout << std::fixed;
     std::cout << std::setprecision(2);
     std::cout << total_distance << std::endl;
-    return 0;
+}
+
+void phase1c() {
     int n, s;
     float x, y;
     std::cin >> n;
@@ -176,12 +188,27 @@ int main() {
         std::cin >> x >> y >> s;
         cities.push_back(new City(x, y, s));
     }
-//    find_capitals(cities);
-//    float total_weight = prim(cities);
+    find_capitals(cities);
+}
+
+void phase2a() {
+    int n, s;
+    float x, y;
+    std::cin >> n;
+    std::vector<City *> cities;
+    cities.reserve(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> x >> y >> s;
+        cities.push_back(new City(x, y, s));
+    }
     float total_weight = sep_prim(cities);
-//    std::cout << std::fixed;
-//    std::cout << std::setprecision(2);
-//    std::cout << total_weight << std::endl;
     printf("%.2f\n", total_weight);
+}
+
+int main() {
+//    phase1a();
+//    phase1b();
+//    phase1c();
+//    phase2a();
     return 0;
 }

@@ -2,6 +2,25 @@
 
 KDTree::KDTree(int k) : k(k) {}
 
+Node *KDTree::make() {
+    double x, y;
+    int state, count;
+    std::cin >> count;
+    edges = count - 1;
+    std::cin >> x;
+    std::cin >> y;
+    std::cin >> state;
+    Node *first_node = new Node(x, y);
+    for (int i = 0; i < edges; ++i) {
+        std::cin >> x;
+        std::cin >> y;
+        std::cin >> state;
+        Node *new_node = new Node(x, y);
+        this->insert(this->root, new_node, 0);
+    }
+    return first_node;
+}
+
 void KDTree::search_nearest(Node *this_node, Node *that_node) {
     double distance = this_node->distance(that_node);
     int this_d = this_node->dimension;
@@ -141,23 +160,4 @@ void KDTree::delete_node(Node *this_node, Node *parent, Node *that_node) {
         else
             delete_node(this_node->right, this_node, that_node);
     }
-}
-
-Node *KDTree::make() {
-    double x, y;
-    int state, count;
-    std::cin >> count;
-    edges = count - 1;
-    std::cin >> x;
-    std::cin >> y;
-    std::cin >> state;
-    Node *first_node = new Node(x, y);
-    for (int i = 0; i < edges; ++i) {
-        std::cin >> x;
-        std::cin >> y;
-        std::cin >> state;
-        Node *new_node = new Node(x, y);
-        this->insert(this->root, new_node, 0);
-    }
-    return first_node;
 }

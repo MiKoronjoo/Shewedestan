@@ -9,7 +9,7 @@ using pnn = std::pair<Node *, Node *>;
 
 class KDTree {
 public:
-    int edges;
+    int edges{};
     int k;
     Node *root = nullptr;
     Node *nearest_node = nullptr;

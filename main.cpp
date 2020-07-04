@@ -8,8 +8,8 @@
 
 #define INF MAXFLOAT
 
-float prim(std::vector<City *> &cities) {
-    float total_weight = 0;
+double prim(std::vector<City *> &cities) {
+    double total_weight = 0;
     int n = cities.size();
     std::vector<bool> selected(n, false);
     std::vector<Path> min_e(n);
@@ -36,8 +36,8 @@ float prim(std::vector<City *> &cities) {
     return total_weight;
 }
 
-float state_prim(std::vector<std::vector<City *>> &states) {
-    float total_weight = 0;
+double state_prim(std::vector<std::vector<City *>> &states) {
+    double total_weight = 0;
     int n = states.size();
     std::vector<bool> selected(n, false);
     std::vector<Path> min_e(n);
@@ -66,13 +66,13 @@ float state_prim(std::vector<std::vector<City *>> &states) {
     return total_weight;
 }
 
-float sep_prim(std::vector<City *> &cities) {
+double sep_prim(std::vector<City *> &cities) {
     int n = cities[cities.size() - 1]->getState();
     std::vector<std::vector<City *>> states(n);
     for (auto &city: cities) {
         states[city->getState() - 1].push_back(city);
     }
-    float total_weight = 0;
+    double total_weight = 0;
     for (auto state: states) {
         if (state.empty())
             continue;
@@ -93,13 +93,13 @@ void find_capitals(std::vector<City *> &cities) {
             continue;
         for (int i: state) {
             for (int j: state) {
-                float dis = cities[i]->distance(cities[j]);
+                double dis = cities[i]->distance(cities[j]);
                 if (dis > cities[i]->getMaxDis()) {
                     cities[i]->setMaxDis(dis);
                 }
             }
         }
-        float min_dis = INF;
+        double min_dis = INF;
         int cap_indx = -1;
         for (int i: state) {
             if (cities[i]->getMaxDis() < min_dis) {
@@ -118,7 +118,7 @@ bool compare(const Edge &e1, const Edge &e2) {
 
 void phase1a() {
     int count, state;
-    float x, y;
+    double x, y;
     std::cin >> count;
     std::vector<City *> cities;
     cities.reserve(count);
@@ -126,7 +126,7 @@ void phase1a() {
         std::cin >> x >> y >> state;
         cities.push_back(new City(x, y, state));
     }
-    float total_weight = prim(cities);
+    double total_weight = prim(cities);
     printf("%.2f\n", total_weight);
 }
 
@@ -180,7 +180,7 @@ void phase1b() {
 
 void phase1c() {
     int count, state;
-    float x, y;
+    double x, y;
     std::cin >> count;
     std::vector<City *> cities;
     cities.reserve(count);
@@ -193,7 +193,7 @@ void phase1c() {
 
 void phase2a() {
     int count, state;
-    float x, y;
+    double x, y;
     std::cin >> count;
     std::vector<City *> cities;
     cities.reserve(count);
@@ -201,8 +201,10 @@ void phase2a() {
         std::cin >> x >> y >> state;
         cities.push_back(new City(x, y, state));
     }
-    float total_weight = sep_prim(cities);
-    printf("%.2f\n", total_weight);
+    double total_weight = sep_prim(cities);
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
+    std::cout << total_weight << std::endl;
 }
 
 void phase2b() {
@@ -271,10 +273,10 @@ void phase2b() {
 }
 
 int main() {
-//    phase1a();
+    phase1a();
 //    phase1b();
 //    phase1c();
 //    phase2a();
-    phase2b();
+//    phase2b();
     return 0;
 }

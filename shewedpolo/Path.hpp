@@ -3,10 +3,10 @@
 
 class Path {
 public:
-    float distance;
+    double distance;
     int to;
 
 public:
     Path();
-    Path(float distance, int to);
+    Path(double distance, int to);
 };

@@ -3,20 +3,20 @@
 
 class City {
 private:
-    float x, y, max_dis;
+    double x, y, max_dis;
 public:
-    float getMaxDis() const;
+    double getMaxDis() const;
 
-    void setMaxDis(float maxDis);
+    void setMaxDis(double maxDis);
 
 private:
     int state;
     bool is_capital;
 
 public:
-    float getX() const;
+    double getX() const;
 
-    float getY() const;
+    double getY() const;
 
     int getState() const;
 
@@ -25,9 +25,9 @@ public:
     void setIsCapital(bool isCapital);
 
 public:
-    City(float x, float y, int state);
+    City(double x, double y, int state);
 
-    float distance(City *that);
+    double distance(City *that);
 
-    float distance(float x0, float y0) const;
+    double distance(double x0, double y0) const;
 };

@@ -2,21 +2,21 @@
 #include "City.hpp"
 
 
-City::City(float x, float y, int state) : x(x), y(y), max_dis(0), state(state), is_capital(false) {}
+City::City(double x, double y, int state) : x(x), y(y), max_dis(0), state(state), is_capital(false) {}
 
-float City::distance(City *that) {
+double City::distance(City *that) {
     return sqrt(pow(x - that->x, 2) + pow(y - that->y, 2));
 }
 
-float City::distance(float x0, float y0) const {
+double City::distance(double x0, double y0) const {
     return sqrt(pow(x - x0, 2) + pow(y - y0, 2));
 }
 
-float City::getX() const {
+double City::getX() const {
     return x;
 }
 
-float City::getY() const {
+double City::getY() const {
     return y;
 }
 
@@ -32,10 +32,10 @@ void City::setIsCapital(bool isCapital) {
     is_capital = isCapital;
 }
 
-float City::getMaxDis() const {
+double City::getMaxDis() const {
     return max_dis;
 }
 
-void City::setMaxDis(float maxDis) {
+void City::setMaxDis(double maxDis) {
     max_dis = maxDis;
 }
